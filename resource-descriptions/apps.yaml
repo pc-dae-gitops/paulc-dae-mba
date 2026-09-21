@@ -1,5 +1,0 @@
-apps:
-  - name: test-app
-    namespace: test
-    chart: test-app
-    registry: oci://ghcr.io/pc-dae-gitops
