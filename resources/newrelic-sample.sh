@@ -1,0 +1,3 @@
+export NEWRELIC_LICENSE=
+export NEWRELIC_KEY=
+export NEWRELIC_ACCOUNT=
