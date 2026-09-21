@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-config
+  namespace: flux-system
+data:
+  clusterType: "macbook"
+  clusterName: local
+  dnsSuffix: kubernetes.docker.internal
+  clusterIP: 10.101.220.154
+  scmType: github
+  registry: 
+  GitHubServer: github.com
+  GitHubOrg: pc-dae-gitops
+  GitHubRepo: paulc-dae-mba
+  globalGitHubOrg: pc-dae-gitops
+  globalGitHubRepo: mac-k8s
+  globalGitHubBranch: main
+  userEmail: paul.carlton@dae.mn
+  vault_url: https://vault.kubernetes.docker.internal
+  commitUser: paul-carlton
