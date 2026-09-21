@@ -8,7 +8,7 @@ data:
   clusterType: "macbook"
   clusterName: local
   dnsSuffix: kubernetes.docker.internal
-  clusterIP: 10.101.220.154
+  clusterIP: 10.106.35.131
   scmType: github
   registry: 
   GitHubServer: github.com
