@@ -1,0 +1,5 @@
+apps:
+  - name: otel
+    namespace: otel
+    config:
+      observabilityBranch: main
