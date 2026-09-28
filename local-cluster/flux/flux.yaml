@@ -1,3 +1,25 @@
+# Flux Kustomizations for OpenShift Local (crc) clusters, see bin/crc-setup.sh
+# The OpenShift router provides ingress, the hostpath provisioner provides storage and cluster monitoring
+# provides metrics-server and kube-state-metrics, so ingress-nginx, metrics-server and kube-state-metrics
+# are not deployed. cert-manager and the secrets store csi driver are deployed using Red Hat operators
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: crc-scc
+  namespace: flux-system
+spec:
+  dependsOn:
+  - name: flux-components
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
+  path: ./local-cluster/core/crc/scc
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: mac-k8s-config
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -6,6 +28,7 @@ metadata:
 spec:
   dependsOn:
   - name: flux-components
+  - name: crc-scc
   interval: 10m0s
   retryInterval: 30s
   timeout: 30s
@@ -15,6 +38,46 @@ spec:
   sourceRef:
     kind: GitRepository
     name: mac-k8s-config
+  patches:
+    - target:
+        kind: HelmRelease
+        name: kyverno
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: kyverno
+        spec:
+          values:
+            # Do not block api requests if kyverno is unavailable, i.e. following crc stop/start
+            features:
+              forceFailurePolicyIgnore:
+                enabled: true
+            config:
+              # Keep kyverno away from OpenShift control plane namespaces
+              webhooks:
+                namespaceSelector:
+                  matchExpressions:
+                    - key: kubernetes.io/metadata.name
+                      operator: NotIn
+                      values:
+                        - kube-system
+                    - key: openshift.io/run-level
+                      operator: DoesNotExist
+              resourceFiltersInclude:
+                - "[*/*,openshift,*]"
+                - "[*/*,openshift-*,*]"
+            # bitnami/kubectl is no longer published, the hook jobs need bash and awk as well as kubectl
+            webhooksCleanup:
+              image:
+                registry: registry.redhat.io
+                repository: openshift4/ose-cli
+                tag: latest
+            policyReportsCleanup:
+              image:
+                registry: registry.redhat.io
+                repository: openshift4/ose-cli
+                tag: latest
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -26,34 +89,27 @@ spec:
   - name: flux-components
   interval: 10m0s
   retryInterval: 30s
-  timeout: 30s
-  path: ./local-cluster/core/cert-manager
+  timeout: 10m
+  path: ./local-cluster/core/crc/cert-manager
   prune: true
-  wait: true
+  # healthChecks are ignored if wait is true, wait for the operator to deploy cert-manager
+  wait: false
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager
+      namespace: cert-manager
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager-webhook
+      namespace: cert-manager
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager-cainjector
+      namespace: cert-manager
   sourceRef:
     kind: GitRepository
     name: mac-k8s-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: nginx
-  namespace: flux-system
-spec:
-  dependsOn:
-  - name: flux-components
-  interval: 10m0s
-  retryInterval: 30s
-  timeout: 30s
-  path: ./local-cluster/core/nginx
-  prune: true
-  wait: true
-  sourceRef:
-    kind: GitRepository
-    name: mac-k8s-config
-  postBuild:
-    substitute:
-      dnsSuffix: kubernetes.docker.internal
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -63,6 +119,7 @@ metadata:
 spec:
   dependsOn:
   - name: flux-components
+  - name: crc-scc
   interval: 10m0s
   retryInterval: 30s
   timeout: 30s
@@ -87,13 +144,12 @@ spec:
   wait: true
   dependsOn:
     - name: cert-manager
-    - name: nginx
   sourceRef:
     kind: GitRepository
     name: mac-k8s-config
   postBuild:
     substitute:
-      dnsSuffix: kubernetes.docker.internal
+      dnsSuffix: kubernetes.local.internal
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -104,6 +160,7 @@ spec:
   dependsOn:
     - name: cert-config
     - name: config
+    - name: crc-scc
   interval: 10m0s
   retryInterval: 30s
   timeout: 30s
@@ -113,12 +170,58 @@ spec:
   sourceRef:
     kind: GitRepository
     name: mac-k8s-config
+  patches:
+    - target:
+        kind: HelmRelease
+        name: vault
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: vault
+        spec:
+          values:
+            # Let the restricted-v2 SCC assign the uid and fsGroup
+            global:
+              openshift: true
+            # Not rendered when global.openshift is true, see vault-ingress
+            server:
+              ingress:
+                enabled: false
+            # Register with the Red Hat secrets store csi driver, see local-cluster/core/crc/csi
+            csi:
+              daemonSet:
+                providersDir: /var/run/secrets-store-csi-providers
+                securityContext:
+                  container:
+                    privileged: true
   postBuild:
     substitute:
-      storageClass: hostpath
+      storageClass: crc-csi-hostpath-provisioner
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: vault-ingress
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: cert-config
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
+  path: ./local-cluster/core/crc/vault
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: mac-k8s-config
+  postBuild:
+    substitute:
+      dnsSuffix: kubernetes.local.internal
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -128,6 +231,7 @@ metadata:
 spec:
   dependsOn:
   - name: flux-components
+  - name: crc-scc
   interval: 10m0s
   retryInterval: 30s
   timeout: 30s
@@ -145,11 +249,11 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-  - name: vault
+  - name: flux-components
   interval: 10m0s
   retryInterval: 30s
   timeout: 30s
-  path: ./local-cluster/core/csi
+  path: ./local-cluster/core/crc/csi
   prune: true
   wait: true
   sourceRef:
