@@ -1,6 +1,3 @@
-CONFIDENTIALITY: PUBLIC
-STATUS: DRAFT - UNREVIEWED
-
 # paulc-dae-mba K8s Cluster Configuration
 
 This repository contains the configuration for a K8s cluster on Paul Carlton's MacBook, created from the [mac-k8s-template](https://github.com/pc-dae-gitops/mac-k8s-template) repository. The scripts and shared configuration are in the [mac-k8s](https://github.com/pc-dae-gitops/mac-k8s) repository, which must be cloned alongside this repository.
@@ -81,8 +78,8 @@ Run `kind-cluster.sh --delete` to delete the kind cluster. For Docker Kubernetes
 | AI Platform | Claude Code, VS Code extension (Anthropic) |
 | Human Accountable | Paul Carlton |
 | Date of Generation | 28 September 2026 |
-| Document Status | DRAFT - UNREVIEWED |
-| Human Oversight Record | Unreviewed |
+| Document Status | REVIEWED |
+| Human Oversight Record | reviewed |
 | Personal Data Flag | Contains the repository owner's name only, lawful basis legitimate interests (authorship attribution). |
 | Intended Audience | Public, the repository owner and readers of this repository |
 | Known Limitations | Configuration table reflects `.envrc` at the time of writing and must be kept in step with it. |
