@@ -22,7 +22,7 @@ spec:
       appName: otel
       # config values from apps.yaml
 
-      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubServer: github.com
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
       observabilityBranch: migration
