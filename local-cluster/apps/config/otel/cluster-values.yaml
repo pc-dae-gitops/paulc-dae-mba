@@ -1,0 +1,39 @@
+---
+# Helm values for the otel-cluster HelmRelease, see otel/cluster/otel-cluster/values.yaml in the observability repository
+# The values.yaml key is merged over the chart defaults and cluster-config, the HelmRelease's inline values take precedence
+# Flux postBuild substitution is applied to this file, so ${var} references are expanded, use $${var} for a literal ${var}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-cluster-values
+  namespace: ${nameSpace}
+data:
+  values.yaml: |
+    pipelines:
+      self:
+        debug: false
+      kubernetes_controllers:
+        debug: false
+      ksm:
+        debug: false
+      prometheus_kubernetes:
+        debug: false
+      openshift_metrics:
+        debug: false
+      k8s_cluster:
+        debug: false
+      nr:
+        debug: false
+      k8s_events_newrelic:
+        debug: false
+
+    debug:
+      enabled: false
+      storage:
+        size: 5Gi
+      fileExporter:
+        path: /var/lib/otelcol/debug
+        rotation:
+          max_megabytes: 10
+          max_days: 2
+          max_backups: 2
