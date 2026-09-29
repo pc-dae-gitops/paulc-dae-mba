@@ -1,0 +1,30 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-config-otel
+  namespace: null
+spec:
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
+  dependsOn:
+    - name: app-config-otel
+  path: ./local-cluster/apps/otel
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substitute:
+      nameSpace: null
+      appName: otel
+      # config values from apps.yaml
+
+      observabilityBranch: migration
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+      - kind: ConfigMap
+        name: otel-config
+        optional: true
