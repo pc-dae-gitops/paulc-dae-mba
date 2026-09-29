@@ -22,6 +22,9 @@ spec:
       appName: otel
       # config values from apps.yaml
 
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
       observabilityBranch: migration
     substituteFrom:
       - kind: ConfigMap
