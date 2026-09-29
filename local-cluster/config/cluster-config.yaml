@@ -5,12 +5,12 @@ metadata:
   name: cluster-config
   namespace: flux-system
 data:
-  clusterType: "macbook"
+  clusterType: crc
   clusterName: local
   dnsSuffix: kubernetes.local.internal
   clusterIP: 10.217.4.190
   scmType: github
-  registry: 
+  registry: paulcalrtondae
   GitHubServer: github.com
   GitHubOrg: pc-dae-gitops
   GitHubRepo: paulc-dae-mba
