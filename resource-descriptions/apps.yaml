@@ -2,6 +2,9 @@ apps:
   - name: otel
     namespace: otel
     config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
       observabilityBranch: migration
     secrets:
       newrelic-key:
