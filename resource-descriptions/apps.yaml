@@ -2,4 +2,9 @@ apps:
   - name: otel
     namespace: otel
     config:
-      observabilityBranch: main
+      observabilityBranch: migration
+    secrets:
+      newrelic-key:
+        licenseKey: ${NEWRELIC_LICENSE_KEY}
+      splunk-hec-token:
+        hecToken: ${SPLUNK_HEC_TOKEN}
