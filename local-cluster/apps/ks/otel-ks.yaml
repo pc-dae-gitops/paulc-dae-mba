@@ -8,7 +8,7 @@ spec:
   retryInterval: 30s
   timeout: 30s
   dependsOn:
-    - name: app-config-otel
+    - name: app-cluster-config-otel
   path: ./local-cluster/apps/otel
   prune: true
   wait: true
