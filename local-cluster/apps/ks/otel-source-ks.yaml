@@ -9,6 +9,7 @@ spec:
   timeout: 30s
   dependsOn:
     - name: namespace-otel
+      namespace: flux-system
   path: ./local-cluster/apps/otel/source
   prune: true
   wait: true
