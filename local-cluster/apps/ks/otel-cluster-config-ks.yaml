@@ -25,7 +25,7 @@ spec:
       observabilityGitHubServer: github.com
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
-      observabilityBranch: migration
+      observabilityBranch: testing
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config

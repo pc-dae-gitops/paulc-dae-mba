@@ -5,7 +5,7 @@ apps:
       observabilityGitHubServer: ${GITHUB_SERVER}
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
-      observabilityBranch: migration
+      observabilityBranch: develop
     secrets:
       newrelic-key:
         licenseKey: ${NEWRELIC_LICENSE_KEY}
