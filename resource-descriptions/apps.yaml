@@ -6,8 +6,34 @@ apps:
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
       observabilityBranch: develop
+      # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
+      otelVictoriaMetrics: "true"
+      otelLoki: "true"
+      # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
+      otelControlPlaneComponents: "false"
     secrets:
       newrelic-key:
         licenseKey: ${NEWRELIC_LICENSE_KEY}
       splunk-hec-token:
         hecToken: ${SPLUNK_HEC_TOKEN}
+  - name: victoria-metrics
+    namespace: victoria-metrics
+    config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+  - name: loki
+    namespace: loki
+    config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+  - name: grafana
+    namespace: grafana
+    config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
