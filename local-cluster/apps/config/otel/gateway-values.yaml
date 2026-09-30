@@ -22,9 +22,9 @@ data:
       nr:
         debug: false
       clf_logs:
-        debug: false
+        debug: true
       clf_audit_logs:
-        debug: false
+        debug: true
       node_logs:
         debug: false
       cluster_logs:
@@ -37,7 +37,7 @@ data:
         debug: false
 
     debug:
-      enabled: false
+      enabled: true
       storage:
         size: 5Gi
       fileExporter:
