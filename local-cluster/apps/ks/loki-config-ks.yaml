@@ -2,14 +2,14 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: app-config-loki
-  namespace: grafana
+  namespace: loki
 spec:
   interval: 5m0s
   retryInterval: 30s
   timeout: 30s
   dependsOn:
     - name: app-source-loki
-      namespace: grafana
+      namespace: loki
   path: ./local-cluster/apps/loki/config
   prune: true
   wait: true
@@ -18,7 +18,7 @@ spec:
     name: mac-k8s-config
   postBuild:
     substitute:
-      nameSpace: grafana
+      nameSpace: loki
       appName: loki
       # config values from apps.yaml
 
