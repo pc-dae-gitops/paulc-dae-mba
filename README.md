@@ -59,6 +59,10 @@ export GRAFANA_ADMIN_PASSWORD=...
 
 Other secrets are loaded into Vault by `secrets.sh` from JSON files in `resources/secrets`, the file path is the Vault secret name. These files are passed through `envsubst`, so reference environment variables set in your bash profile rather than putting secret values in them.
 
+### Cluster name
+
+Several clusters can send telemetry to the same New Relic, Splunk, VictoriaMetrics or Loki, so each needs a unique name. The otel collectors add it to everything they send, as `k8s.cluster.name` and the `cluster` label in VictoriaMetrics. `setup.sh` sets it to `<cluster type>-<GitHub user>-<machine name>`, e.g. `kind-paul-carlton-pauls-macbook-air`, using `GITHUB_USER` and the macOS local host name, and stores it in the `cluster-config` ConfigMap. Set `CLUSTER_NAME` in `.envrc` to choose a different name. It's separate from the kind cluster name, `KIND_CLUSTER_NAME`.
+
 ### DNS
 
 Ingress host names are subdomains of `local_dns`, set in `.envrc`, which defaults to `kubernetes.local.internal`. Add the host names you use to `/etc/hosts`, e.g.
@@ -85,7 +89,7 @@ Start or reset the Kubernetes cluster using the Docker Dashboard, then run the `
 
 ### Kind
 
-Run `setup.sh --kind` to create a kind cluster and deploy to it. If a kind cluster named `$CLUSTER_NAME` already exists it is used rather than recreated. The cluster can also be created on its own using `kind-cluster.sh`.
+Run `setup.sh --kind` to create a kind cluster and deploy to it. If a kind cluster named `$KIND_CLUSTER_NAME`, default `local`, already exists it is used rather than recreated. The cluster can also be created on its own using `kind-cluster.sh`.
 
 Kind clusters are configured using the following environment variables, set in `.envrc`. See `kind-cluster.sh --help` for details.
 
