@@ -27,6 +27,7 @@ spec:
       observabilityGitHubRepo: observability
       observabilityBranch: develop
       suffix: -otel # Add a suffix to the cluster name and host name for the otel apps
+      otelSplunk: "false"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
