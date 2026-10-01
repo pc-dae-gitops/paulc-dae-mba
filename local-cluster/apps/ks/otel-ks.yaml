@@ -25,7 +25,7 @@ spec:
       observabilityGitHubServer: github.com
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
-      observabilityBranch: devpaulc-dae-mba/resource-descriptions/apps.yamlelop
+      observabilityBranch: develop
       # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
       otelVictoriaMetrics: "true"
       otelLoki: "true"
