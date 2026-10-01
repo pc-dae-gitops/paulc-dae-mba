@@ -1,0 +1,31 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-source-loki
+  namespace: grafana
+spec:
+  interval: 5m0s
+  retryInterval: 30s
+  timeout: 30s
+  dependsOn:
+    - name: namespace-grafana
+      namespace: flux-system
+  path: ./local-cluster/apps/loki/source
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: mac-k8s-config
+  postBuild:
+    substitute:
+      nameSpace: grafana
+      appName: loki
+      # config values from apps.yaml
+
+      observabilityGitHubServer: github.com
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
