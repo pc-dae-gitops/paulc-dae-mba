@@ -42,3 +42,33 @@ apps:
       admin: # Grafana admin login, set GRAFANA_ADMIN_PASSWORD in your bash profile
         admin-user: admin
         admin-password: ${GRAFANA_ADMIN_PASSWORD}
+  - name: splunk
+    namespace: splunk
+    config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+      # The splunk/splunk image is amd64 only, load an arm64 relabelled copy into the Kind nodes, see splunk/README.md
+      # in the observability repository
+      splunkImageRepository: local/splunk
+      splunkImagePullPolicy: Never
+    secrets:
+      splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
+        password: ${SPLUNK_ADMIN_PASSWORD}
+        hecToken: ${SPLUNK_HEC_TOKEN} # The same token as the otel app's splunk-hec-token
+  - name: nr-agent
+    namespace: newrelic # The chart's OpenShift values expect the newrelic namespace
+    config:
+      observabilityGitHubServer: ${GITHUB_SERVER}
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+  # New Relic's Kubernetes OpenTelemetry collectors, not deployed yet
+  # - name: nr-otel
+  #   namespace: nr-otel
+  #   config:
+  #     observabilityGitHubServer: ${GITHUB_SERVER}
+  #     observabilityGitHubOrg: pc-dae
+  #     observabilityGitHubRepo: observability
+  #     observabilityBranch: develop
