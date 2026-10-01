@@ -131,7 +131,7 @@ Docker Kubernetes and OpenShift Local both bind ports 80 and 443 on the host, so
 
 ### Deployed components
 
-The `setup.sh` script deploys Flux, which deploys core utilities: Kyverno, cert-manager, ingress-nginx, Vault, External Secrets, Reloader, Secrets Store CSI driver, metrics-server and kube-state-metrics. It then initialises and unseals Vault and loads secrets.
+The `setup.sh` script deploys Flux, which deploys core utilities: Kyverno, cert-manager, ingress-nginx, Vault, External Secrets, Reloader, Secrets Store CSI driver, metrics-server and kube-state-metrics. It then initialises and unseals Vault and loads secrets. ingress-nginx serves a wildcard certificate for `*.<dnsSuffix>`, signed by the local CA, and a "Service not found" page for hosts without an ingress.
 
 Addons, namespaces and applications are deployed by listing them in files in `resource-descriptions`:
 
