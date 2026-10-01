@@ -61,7 +61,7 @@ Other secrets are loaded into Vault by `secrets.sh` from JSON files in `resource
 
 ### Cluster name
 
-Several clusters can send telemetry to the same New Relic, Splunk, VictoriaMetrics or Loki, so each needs a unique name. The otel collectors add it to everything they send, as `k8s.cluster.name` and the `cluster` label in VictoriaMetrics. `setup.sh` sets it to `<cluster type>-<GitHub user>-<machine name>`, e.g. `kind-paul-carlton-pauls-macbook-air`, using `GITHUB_USER` and the macOS local host name, and stores it in the `cluster-config` ConfigMap. Set `CLUSTER_NAME` in `.envrc` to choose a different name. It's separate from the kind cluster name, `KIND_CLUSTER_NAME`.
+Several clusters can send telemetry to the same New Relic, Splunk, VictoriaMetrics or Loki, so each needs a unique name. The otel collectors add it to everything they send, as `k8s.cluster.name` and the `cluster` label in VictoriaMetrics. `setup.sh` sets it to `<cluster type>-<GitHub user>-<machine name>`, e.g. `kind-paul-carlton-pauls-macbook-air`, using `GITHUB_USER` and the macOS local host name, and stores it in the `cluster-config` ConfigMap. Set `MACHINE` in `.envrc` to use a different machine name, or `CLUSTER_NAME` to choose a different cluster name. It's separate from the kind cluster name, `KIND_CLUSTER_NAME`.
 
 ### DNS
 
