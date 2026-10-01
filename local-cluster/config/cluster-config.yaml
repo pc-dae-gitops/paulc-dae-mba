@@ -5,10 +5,10 @@ metadata:
   name: cluster-config
   namespace: flux-system
 data:
-  clusterType: crc
+  clusterType: kind
   clusterName: local
   dnsSuffix: kubernetes.local.internal
-  clusterIP: 10.217.4.190
+  clusterIP: 10.96.242.35
   scmType: github
   registry: paulcalrtondae
   GitHubServer: github.com
