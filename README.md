@@ -58,7 +58,7 @@ Other secrets are loaded into Vault by `secrets.sh` from JSON files in `resource
 Ingress host names are subdomains of `local_dns`, set in `.envrc`, which defaults to `kubernetes.local.internal`. Add the host names you use to `/etc/hosts`, e.g.
 
 ```text
-127.0.0.1        vault.kubernetes.local.internal grafana.kubernetes.local.internal
+127.0.0.1        vault.kubernetes.local.internal grafana.kubernetes.local.internal loki.kubernetes.local.internal victoria-metrics.kubernetes.local.internal
 ```
 
 `setup.sh` warns if `vault.${local_dns}` does not resolve.
