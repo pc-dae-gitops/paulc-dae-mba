@@ -49,10 +49,8 @@ apps:
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
       observabilityBranch: develop
-      # The splunk/splunk image is amd64 only, load an arm64 relabelled copy into the Kind nodes, see splunk/README.md
-      # in the observability repository
-      splunkImageRepository: local/splunk
-      splunkImagePullPolicy: Never
+      # The splunk/splunk image is amd64 only, the splunk kind extra pushes an arm64 relabelled copy to the local registry
+      splunkImageRepository: localhost:5001/splunk
     secrets:
       splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
         password: ${SPLUNK_ADMIN_PASSWORD}
