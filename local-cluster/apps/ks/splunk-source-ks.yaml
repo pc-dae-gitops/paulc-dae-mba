@@ -1,0 +1,33 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-source-splunk
+  namespace: splunk
+spec:
+  interval: 5m0s
+  retryInterval: 30s
+  timeout: 30s
+  dependsOn:
+    - name: namespace-splunk
+      namespace: flux-system
+  path: ./local-cluster/apps/splunk/source
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: mac-k8s-config
+  postBuild:
+    substitute:
+      nameSpace: splunk
+      appName: splunk
+      # config values from apps.yaml
+
+      observabilityGitHubServer: github.com
+      observabilityGitHubOrg: pc-dae
+      observabilityGitHubRepo: observability
+      observabilityBranch: develop
+      # The splunk/splunk image is amd64 only, the splunk kind extra pushes an arm64 relabelled copy to the local registry
+      splunkImageRepository: localhost:5001/splunk
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
