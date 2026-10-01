@@ -27,11 +27,6 @@ spec:
       observabilityGitHubRepo: observability
       observabilityBranch: develop
       suffix: -otel # Add a suffix to the cluster name and host name for the otel apps
-      # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
-      otelVictoriaMetrics: "true"
-      otelLoki: "true"
-      # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
-      otelControlPlaneComponents: "true"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config

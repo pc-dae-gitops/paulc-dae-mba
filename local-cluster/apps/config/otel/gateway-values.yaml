@@ -10,12 +10,7 @@ metadata:
 data:
   values.yaml: |
     logging: # Log exporter setting
-      enabled: true # Send logs to Splunk, the splunk app
-
-    targets:
-      splunk: # The splunk app, its HEC token must be the same as the otel app's splunk-hec-token
-        endpoint: http://splunk.splunk.svc:8088
-        index: otel_logs # Created by the splunk app
+      enabled: false # Splunk isn't deployed on crc
 
     pipelines:
       node:

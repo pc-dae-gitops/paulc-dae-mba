@@ -1,3 +1,5 @@
+# Apps for the OpenShift Local (crc) cluster, the crc branch of this repository. Grafana, Loki, Splunk and
+# VictoriaMetrics are only deployed on the Kind cluster, see the main branch.
 apps:
   - name: otel
     namespace: otel
@@ -7,54 +9,13 @@ apps:
       observabilityGitHubRepo: observability
       observabilityBranch: develop
       suffix: "-otel" # Add a suffix to the cluster name and host name for the otel apps
-      # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
-      otelVictoriaMetrics: "true"
-      otelLoki: "true"
-      # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
-      otelControlPlaneComponents: "true"
+      # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false.
+      # VictoriaMetrics and Loki aren't deployed on crc. Splunk logging is off in the gateway values.
     secrets:
       newrelic-key:
         licenseKey: ${NEWRELIC_LICENSE_KEY}
-      splunk-hec-token:
+      splunk-hec-token: # Required by the otel gateway's ExternalSecret, Splunk isn't deployed on crc
         hecToken: ${SPLUNK_HEC_TOKEN}
-  - name: victoria-metrics
-    namespace: victoria-metrics
-    config:
-      observabilityGitHubServer: ${GITHUB_SERVER}
-      observabilityGitHubOrg: pc-dae
-      observabilityGitHubRepo: observability
-      observabilityBranch: develop
-  - name: loki
-    namespace: loki
-    config:
-      observabilityGitHubServer: ${GITHUB_SERVER}
-      observabilityGitHubOrg: pc-dae
-      observabilityGitHubRepo: observability
-      observabilityBranch: develop
-  - name: grafana
-    namespace: grafana
-    config:
-      observabilityGitHubServer: ${GITHUB_SERVER}
-      observabilityGitHubOrg: pc-dae
-      observabilityGitHubRepo: observability
-      observabilityBranch: develop
-    secrets:
-      admin: # Grafana admin login, set GRAFANA_ADMIN_PASSWORD in your bash profile
-        admin-user: admin
-        admin-password: ${GRAFANA_ADMIN_PASSWORD}
-  - name: splunk
-    namespace: splunk
-    config:
-      observabilityGitHubServer: ${GITHUB_SERVER}
-      observabilityGitHubOrg: pc-dae
-      observabilityGitHubRepo: observability
-      observabilityBranch: develop
-      # The splunk/splunk image is amd64 only, the splunk kind extra pushes an arm64 relabelled copy to the local registry
-      splunkImageRepository: localhost:5001/splunk
-    secrets:
-      splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
-        password: ${SPLUNK_ADMIN_PASSWORD}
-        hecToken: ${SPLUNK_HEC_TOKEN} # The same token as the otel app's splunk-hec-token
   - name: nr-agent
     namespace: newrelic # The chart's OpenShift values expect the newrelic namespace
     config:
