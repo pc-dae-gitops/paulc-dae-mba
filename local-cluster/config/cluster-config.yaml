@@ -5,8 +5,8 @@ metadata:
   name: cluster-config
   namespace: flux-system
 data:
-  clusterType: kind
-  clusterName: kind-paul-carlton-pauls-macbook-air
+  clusterType: k8s
+  clusterName: k8s-paul-carlton-pauls-macbook-air
   dnsSuffix: kubernetes.local.internal
   clusterIP: 10.96.242.35
   scmType: github
