@@ -2,13 +2,13 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: app-source-otel
-  namespace: victoria-metrics
+  namespace: otel
 spec:
   interval: 5m0s
   retryInterval: 30s
   timeout: 30s
   dependsOn:
-    - name: namespace-victoria-metrics
+    - name: namespace-otel
       namespace: flux-system
   path: ./local-cluster/apps/otel/source
   prune: true
@@ -18,14 +18,14 @@ spec:
     name: mac-k8s-config
   postBuild:
     substitute:
-      nameSpace: victoria-metrics
+      nameSpace: otel
       appName: otel
       # config values from apps.yaml
 
       observabilityGitHubServer: github.com
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
-      observabilityBranch: develop
+      observabilityBranch: devpaulc-dae-mba/resource-descriptions/apps.yamlelop
       # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
       otelVictoriaMetrics: "true"
       otelLoki: "true"
