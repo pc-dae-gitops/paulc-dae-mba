@@ -37,3 +37,7 @@ apps:
       observabilityGitHubOrg: pc-dae
       observabilityGitHubRepo: observability
       observabilityBranch: develop
+    secrets:
+      admin: # Grafana admin login, set GRAFANA_ADMIN_PASSWORD in your bash profile
+        admin-user: admin
+        admin-password: ${GRAFANA_ADMIN_PASSWORD}

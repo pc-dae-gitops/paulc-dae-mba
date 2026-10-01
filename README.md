@@ -51,6 +51,12 @@ Kind clusters use a local pull-through cache for Docker Hub. Docker Hub credenti
 export DOCKERHUB_CREDS=...
 ```
 
+The observability apps in `resource-descriptions/apps.yaml` take their secrets from environment variables too, e.g. `GRAFANA_ADMIN_PASSWORD` for the Grafana admin login.
+
+```bash
+export GRAFANA_ADMIN_PASSWORD=...
+```
+
 Other secrets are loaded into Vault by `secrets.sh` from JSON files in `resources/secrets`, the file path is the Vault secret name. These files are passed through `envsubst`, so reference environment variables set in your bash profile rather than putting secret values in them.
 
 ### DNS
