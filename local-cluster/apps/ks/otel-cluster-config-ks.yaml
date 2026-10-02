@@ -27,6 +27,8 @@ spec:
       observabilityGitHubRepo: observability
       observabilityBranch: develop
       suffix: -otel # Add a suffix to the cluster name and host name for the otel apps
+      # Targets for the otel gateway, New Relic and Splunk default to true, VictoriaMetrics and Loki to false.
+      # Splunk, VictoriaMetrics and Loki aren't deployed on crc.
       otelSplunk: "false"
     substituteFrom:
       - kind: ConfigMap
