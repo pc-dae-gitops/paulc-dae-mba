@@ -32,7 +32,7 @@ metadata:
 spec:
   interval: 5m0s
   ref:
-    branch: main
+    branch: crc
   secretRef:
     name: flux-system
   url: https://github.com/pc-dae-gitops/paulc-dae-mba
