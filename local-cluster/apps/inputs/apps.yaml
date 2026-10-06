@@ -37,3 +37,10 @@ spec:
             licenseKey: ${NEWRELIC_LICENSE_KEY}
           splunk-hec-token:
             hecToken: ${SPLUNK_HEC_TOKEN}
+      - name: nr-agent
+        namespace: newrelic # The chart's OpenShift values expect the newrelic namespace
+        config:
+          observabilityGitHubOrg: pc-dae
+          observabilityGitHubRepo: observability
+          observabilityBranch: develop
+
