@@ -5,27 +5,27 @@ metadata:
   name: cluster-config
   namespace: flux-system
 data:
-  clusterType: crc
+  clusterType: "crc"
   kindCluster: "false"
   kubeletInsecureTLS: "false"
-  storageClass: crc-csi-hostpath-provisioner
-  clusterName: crc-paul-carlton-mba
-  dnsSuffix: kubernetes.local.internal
-  clusterIP: 
-  scmType: github
-  registry: paulcalrtondae
-  GitHubServer: github.com
-  GitHubOrg: pc-dae-gitops
-  GitHubRepo: paulc-dae-mba
-  GitHubBranch: crc
-  globalGitHubOrg: pc-dae-gitops
-  globalGitHubRepo: mac-k8s
-  globalGitHubBranch: main
-  userEmail: paul.carlton@dae.mn
-  vault_url: https://vault.kubernetes.local.internal
-  commitUser: paul-carlton
-  mirrorRegistry: 
-  proxy: false
-  certs: false
-  imagePullSecretName: 
-  vaultIngress: -ingress
+  storageClass: "crc-csi-hostpath-provisioner"
+  clusterName: "crc-paul-carlton-mba"
+  dnsSuffix: "kubernetes.local.internal"
+  clusterIP: ""
+  scmType: "github"
+  registry: "paulcalrtondae"
+  GitHubServer: "github.com"
+  GitHubOrg: "pc-dae-gitops"
+  GitHubRepo: "paulc-dae-mba"
+  GitHubBranch: "crc"
+  globalGitHubOrg: "pc-dae-gitops"
+  globalGitHubRepo: "mac-k8s"
+  globalGitHubBranch: "main"
+  userEmail: "paul.carlton@dae.mn"
+  vault_url: "https://vault.kubernetes.local.internal"
+  commitUser: "paul-carlton"
+  mirrorRegistry: ""
+  proxy: "false"
+  certs: "false"
+  imagePullSecretName: ""
+  vaultIngress: "-ingress"
