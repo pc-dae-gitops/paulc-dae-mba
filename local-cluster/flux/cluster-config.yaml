@@ -8,6 +8,7 @@ data:
   clusterType: crc
   kindCluster: "false"
   kubeletInsecureTLS: "false"
+  storageClass: crc-csi-hostpath-provisioner
   clusterName: crc-paul-carlton-mba
   dnsSuffix: kubernetes.local.internal
   clusterIP: 
