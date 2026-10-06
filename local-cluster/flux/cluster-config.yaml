@@ -9,6 +9,7 @@ data:
   kindCluster: "false"
   kubeletInsecureTLS: "false"
   storageClass: "crc-csi-hostpath-provisioner"
+  ingressClassName: "openshift-default"
   clusterName: "crc-paul-carlton-mba"
   dnsSuffix: "kubernetes.local.internal"
   clusterIP: "10.217.4.190"
