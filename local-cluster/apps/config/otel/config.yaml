@@ -1,8 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ${appName}-cluster-config
-  namespace: ${nameSpace}
-data:
-  observabilityBranch: ${observabilityBranch:=main}
