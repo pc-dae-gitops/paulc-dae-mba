@@ -44,11 +44,11 @@ spec:
         config:
           suffix: "-otel" # Add a suffix to the cluster name and host name for the otel apps
           # Targets for the otel collectors, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
-          otelVictoriaMetrics: "false"
-          otelLoki: "false"
-          otelSplunk: "false"
+          otelVictoriaMetrics: "true"
+          otelLoki: "true"
+          otelSplunk: "true"
           # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
-          otelControlPlaneComponents: "false"
+          otelControlPlaneComponents: "true"
         secrets:
           newrelic-key:
             licenseKey: ${NEWRELIC_LICENSE_KEY}
@@ -130,3 +130,126 @@ spec:
               nri-bundle:
                 global:
                   cluster: ${clusterName} # Without the otel suffix, so its data can be told apart from the otel collectors'
+      - name: victoria-metrics
+        namespace: victoria-metrics
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        releases:
+          - name: victoria-metrics
+            chart: ./victoria-metrics/victoria-metrics
+            timeout: 10m
+            values:
+              victoria-metrics-k8s-stack:
+                vmsingle:
+                  ingress:
+                    enabled: true
+                    ingressClassName: ${ingressClassName}
+                    annotations:
+                      cert-manager.io/cluster-issuer: local-ca-issuer
+                    hosts:
+                      - victoria-metrics.${dnsSuffix}
+                    tls:
+                      - secretName: victoria-metrics-tls
+                        hosts:
+                          - victoria-metrics.${dnsSuffix}
+      - name: loki
+        namespace: loki
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        releases:
+          - name: loki
+            chart: ./loki/loki
+            timeout: 10m
+            values:
+              loki:
+                ingress:
+                  enabled: true # Loki has no UI, / redirects to /services which lists the state of the Loki components
+                  ingressClassName: ${ingressClassName}
+                  annotations:
+                    cert-manager.io/cluster-issuer: local-ca-issuer
+                    nginx.ingress.kubernetes.io/app-root: /services
+                  paths:
+                    queryFrontend:
+                      - / # All components run in the single binary, route every path to it
+                  hosts:
+                    - loki.${dnsSuffix}
+                  tls:
+                    - secretName: loki-tls
+                      hosts:
+                        - loki.${dnsSuffix}
+      - name: grafana
+        namespace: grafana
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        secrets:
+          grafana-admin: # Grafana admin login, set GRAFANA_ADMIN_PASSWORD in your bash profile
+            admin-user: admin
+            admin-password: ${GRAFANA_ADMIN_PASSWORD}
+        releases:
+          - name: grafana
+            chart: ./grafana/grafana
+            values:
+              grafana:
+                admin:
+                  existingSecret: grafana-admin
+                ingress:
+                  enabled: true
+                  ingressClassName: ${ingressClassName}
+                  annotations:
+                    cert-manager.io/cluster-issuer: local-ca-issuer
+                  hosts:
+                    - grafana.${dnsSuffix}
+                  tls:
+                    - secretName: grafana-tls
+                      hosts:
+                        - grafana.${dnsSuffix}
+      - name: splunk
+        namespace: splunk
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        config:
+          # The splunk/splunk image is amd64 only, the splunk kind extra pushes an arm64 relabelled copy to the local registry
+          splunkImageRepository: localhost:5001/splunk
+        secrets:
+          splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
+            password: ${SPLUNK_ADMIN_PASSWORD}
+            hecToken: ${SPLUNK_HEC_TOKEN} # The same token as the otel app's splunk-hec-token
+        releases:
+          - name: splunk
+            chart: ./splunk/splunk-enterprise
+            timeout: 20m # Splunk takes several minutes to start, more under amd64 emulation on Apple Silicon
+            values:
+              splunkNamespace: ${nameSpace}
+              clusterName: ${clusterName}
+              clusterType: ${splunkClusterType:=kind} # kind or eks, the chart doesn't take the cluster-config clusterType
+              acceptLicense: true
+              # The hostpath volumes are on a Docker Desktop host mount, which Splunk doesn't recognise without this
+              optimisticFileLocking: ${splunkOptimisticFileLocking:=true}
+              image:
+                repository: ${splunkImageRepository:=splunk/splunk}
+                pullPolicy: ${splunkImagePullPolicy:=IfNotPresent}
+              ingress:
+                enabled: true
+                className: ${ingressClassName}
+                annotations:
+                  cert-manager.io/cluster-issuer: local-ca-issuer
+                web:
+                  host: splunk.${dnsSuffix}
+                hec:
+                  host: splunk-hec.${dnsSuffix}
