@@ -54,6 +54,9 @@ spec:
             licenseKey: ${NEWRELIC_LICENSE_KEY}
           splunk-hec-token:
             hecToken: ${SPLUNK_HEC_TOKEN}
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: otel-node
             chart: ./otel/node/otel-node
@@ -118,6 +121,9 @@ spec:
         secrets:
           newrelic-key: # The same New Relic account as the otel app
             licenseKey: ${NEWRELIC_LICENSE_KEY}
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: nr-agent
             chart: ./newrelic/nr-agent
@@ -138,6 +144,10 @@ spec:
           sourceGitHubRepo: observability
           sourceBranch: develop
           sourceSecret: observability-git-token
+        secrets:
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: victoria-metrics
             chart: ./victoria-metrics/victoria-metrics
@@ -164,6 +174,10 @@ spec:
           sourceGitHubRepo: observability
           sourceBranch: develop
           sourceSecret: observability-git-token
+        secrets:
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: loki
             chart: ./loki/loki
@@ -197,6 +211,9 @@ spec:
           grafana-admin: # Grafana admin login, set GRAFANA_ADMIN_PASSWORD in your bash profile
             admin-user: admin
             admin-password: ${GRAFANA_ADMIN_PASSWORD}
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: grafana
             chart: ./grafana/grafana
@@ -230,6 +247,9 @@ spec:
           splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
             password: ${SPLUNK_ADMIN_PASSWORD}
             hecToken: ${SPLUNK_HEC_TOKEN} # The same token as the otel app's splunk-hec-token
+          observability-git-token:
+            password: ${GITHUB_TOKEN_OBSERV_READ}
+            username: git
         releases:
           - name: splunk
             chart: ./splunk/splunk-enterprise
