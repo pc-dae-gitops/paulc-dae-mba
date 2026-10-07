@@ -46,7 +46,7 @@ spec:
           # Targets for the otel collectors, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
           otelVictoriaMetrics: "true"
           otelLoki: "true"
-          otelSplunk: "true"
+          otelSplunk: "false"
           # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
           otelControlPlaneComponents: "true"
         secrets:
@@ -232,44 +232,3 @@ spec:
                     - secretName: grafana-tls
                       hosts:
                         - grafana.${dnsSuffix}
-      - name: splunk
-        namespace: splunk
-        source:
-          sourceGitServer: github.com
-          sourceGitHubOrg: pc-dae
-          sourceGitHubRepo: observability
-          sourceBranch: develop
-          sourceSecret: observability-git-token
-        config:
-          # The splunk/splunk image is amd64 only, the splunk kind extra pushes an arm64 relabelled copy to the local registry
-          splunkImageRepository: localhost:5001/splunk
-        secrets:
-          splunk-secrets: # Set SPLUNK_ADMIN_PASSWORD (8 characters or more) and SPLUNK_HEC_TOKEN (a GUID, e.g. from uuidgen) in your bash profile
-            password: ${SPLUNK_ADMIN_PASSWORD}
-            hecToken: ${SPLUNK_HEC_TOKEN} # The same token as the otel app's splunk-hec-token
-          observability-git-token:
-            password: ${GITHUB_TOKEN_OBSERV_READ}
-            username: git
-        releases:
-          - name: splunk
-            chart: ./splunk/splunk-enterprise
-            timeout: 20m # Splunk takes several minutes to start, more under amd64 emulation on Apple Silicon
-            values:
-              splunkNamespace: ${nameSpace}
-              clusterName: ${clusterName}
-              clusterType: ${splunkClusterType:=kind} # kind or eks, the chart doesn't take the cluster-config clusterType
-              acceptLicense: true
-              # The hostpath volumes are on a Docker Desktop host mount, which Splunk doesn't recognise without this
-              optimisticFileLocking: ${splunkOptimisticFileLocking:=true}
-              image:
-                repository: ${splunkImageRepository:=splunk/splunk}
-                pullPolicy: ${splunkImagePullPolicy:=IfNotPresent}
-              ingress:
-                enabled: true
-                className: ${ingressClassName}
-                annotations:
-                  cert-manager.io/cluster-issuer: local-ca-issuer
-                web:
-                  host: splunk.${dnsSuffix}
-                hec:
-                  host: splunk-hec.${dnsSuffix}
