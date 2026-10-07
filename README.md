@@ -51,7 +51,7 @@ Kind clusters use a local pull-through cache for Docker Hub. Docker Hub credenti
 export DOCKERHUB_CREDS=...
 ```
 
-The observability apps in `resource-descriptions/apps.yaml` take their secrets from environment variables too, e.g. `GRAFANA_ADMIN_PASSWORD` for the Grafana admin login.
+The observability apps in `local-cluster/apps/inputs/apps.yaml` take their secrets from environment variables too, e.g. `GRAFANA_ADMIN_PASSWORD` for the Grafana admin login.
 
 ```bash
 export GRAFANA_ADMIN_PASSWORD=...
@@ -142,18 +142,6 @@ Docker Kubernetes and OpenShift Local both bind ports 80 and 443 on the host, so
 ### Deployed components
 
 The `setup.sh` script deploys Flux, which deploys core utilities: Kyverno, cert-manager, ingress-nginx, Vault, External Secrets, Reloader, Secrets Store CSI driver, metrics-server and kube-state-metrics. It then initialises and unseals Vault and loads secrets. ingress-nginx serves a wildcard certificate for `*.<dnsSuffix>`, signed by the local CA, and a "Service not found" page for hosts without an ingress.
-
-Addons, namespaces and applications are deployed by listing them in files in `resource-descriptions`:
-
-- `addons.yaml`, addons from the mac-k8s `local-cluster/addons` directory, e.g. grafana, loki, tempo, otel-collector or newrelic
-
-  ```yaml
-  addons:
-    - name: grafana
-  ```
-
-- `namespaces.yaml`, namespaces to create
-- `apps.yaml`, applications to deploy
 
 ## Destroy
 

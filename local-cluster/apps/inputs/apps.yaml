@@ -1,0 +1,132 @@
+# The apps deployed by the apps ResourceSet (mac-k8s/local-cluster/resourcesets/apps.yaml).
+# Edit this file to add, change or remove an app. Applied by the apps-inputs Flux Kustomization.
+#
+# name:          app name
+# namespace:     target namespace
+# clusterConfig: true to deploy local-cluster/apps/config/<name> from this repository, i.e. <release>-values ConfigMaps
+# source:        the repository the app is deployed from, all optional
+#   sourceGitServer:  defaults to GitHubServer from the cluster-config ConfigMap
+#   sourceGitHubOrg:  defaults to globalGitHubOrg, the mac-k8s repository's organisation
+#   sourceGitHubRepo: defaults to globalGitHubRepo, mac-k8s
+#   sourceBranch:     defaults to globalGitHubBranch
+#   sourcePath:       manifests to deploy, defaults to apps/<name> if the app has no releases
+#   sourceSecret:     secret used to access the repository, read from Vault at apps/<name>/<sourceSecret>
+# config:        string values for the Flux postBuild substitutions in the app's manifests and release values,
+#                in addition to the cluster-config ConfigMap's, e.g. dnsSuffix, clusterName and ingressClassName
+# secrets:       written to Vault at apps/<name>/<secret name> by deploy-apps.sh, the ResourceSet creates an
+#                ExternalSecret of the same name. Values must be environment variable references, e.g. ${MY_TOKEN},
+#                set in your bash profile. This file is committed and applied to the cluster as written, so never
+#                put a secret value here
+# releases:      Helm releases of charts in the source repository
+#   name:        HelmRelease and Helm release name
+#   chart:       path of the chart in the source repository
+#   timeout:     optional, defaults to 5m
+#   valuesFiles: optional, values files in the source repository, merged in order, the chart's values.yaml is only
+#                used if listed
+#   values:      optional, override the values files and the <name>-values ConfigMap, if any
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSetInputProvider
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  type: Static
+  defaultValues:
+    apps:
+      - name: otel
+        namespace: otel
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        config:
+          suffix: "-otel" # Add a suffix to the cluster name and host name for the otel apps
+          # Targets for the otel collectors, New Relic and Splunk default to true, VictoriaMetrics and Loki to false
+          otelVictoriaMetrics: "false"
+          otelLoki: "false"
+          otelSplunk: "false"
+          # Scrape kube-controller-manager and kube-scheduler, needs a Kind cluster created with the metrics extra
+          otelControlPlaneComponents: "false"
+        secrets:
+          newrelic-key:
+            licenseKey: ${NEWRELIC_LICENSE_KEY}
+          splunk-hec-token:
+            hecToken: ${SPLUNK_HEC_TOKEN}
+        releases:
+          - name: otel-node
+            chart: ./otel/node/otel-node
+            values:
+              otelNamespace: ${nameSpace}
+              clusterType: ${clusterType}
+              clusterName: ${clusterName}${suffix:=}
+              hostSuffix: ${suffix:=}
+              targets:
+                newrelic:
+                  enabled: ${otelNewRelic:=true}
+                splunk:
+                  enabled: ${otelSplunk:=true}
+                victoriametrics:
+                  enabled: ${otelVictoriaMetrics:=false}
+                loki:
+                  enabled: ${otelLoki:=false}
+          - name: otel-cluster
+            chart: ./otel/cluster/otel-cluster
+            values:
+              otelNamespace: ${nameSpace}
+              clusterType: ${clusterType}
+              clusterName: ${clusterName}${suffix:=}
+              hostSuffix: ${suffix:=}
+              targets:
+                newrelic:
+                  enabled: ${otelNewRelic:=true}
+                splunk:
+                  enabled: ${otelSplunk:=true}
+                victoriametrics:
+                  enabled: ${otelVictoriaMetrics:=false}
+                loki:
+                  enabled: ${otelLoki:=false}
+              platforms:
+                kubernetes:
+                  controlPlaneComponents: ${otelControlPlaneComponents:=false}
+          - name: otel-gateway
+            chart: ./otel/gateway/otel-gateway
+            values:
+              otelNamespace: ${nameSpace}
+              clusterType: ${clusterType}
+              clusterName: ${clusterName}${suffix:=}
+              hostSuffix: ${suffix:=}
+              targets:
+                newrelic:
+                  enabled: ${otelNewRelic:=true}
+                splunk:
+                  enabled: ${otelSplunk:=true}
+                victoriametrics:
+                  enabled: ${otelVictoriaMetrics:=false}
+                loki:
+                  enabled: ${otelLoki:=false}
+
+      - name: nr-agent
+        namespace: newrelic # The chart's OpenShift values expect the newrelic namespace
+        source:
+          sourceGitServer: github.com
+          sourceGitHubOrg: pc-dae
+          sourceGitHubRepo: observability
+          sourceBranch: develop
+          sourceSecret: observability-git-token
+        secrets:
+          newrelic-key: # The same New Relic account as the otel app
+            licenseKey: ${NEWRELIC_LICENSE_KEY}
+        releases:
+          - name: nr-agent
+            chart: ./newrelic/nr-agent
+            timeout: 10m
+            # values-<clusterType>.yaml adds the OpenShift settings on crc and osc clusters, there is none for k8s
+            valuesFiles:
+              - ./newrelic/nr-agent/values.yaml
+              - ./newrelic/nr-agent/values-${clusterType}.yaml
+            values:
+              nri-bundle:
+                global:
+                  cluster: ${clusterName} # Without the otel suffix, so its data can be told apart from the otel collectors'
