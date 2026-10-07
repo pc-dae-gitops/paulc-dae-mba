@@ -12,7 +12,7 @@ data:
   ingressClassName: "nginx"
   clusterName: "k8s-paul-carlton-mba"
   dnsSuffix: "kubernetes.local.internal"
-  clusterIP: ""
+  clusterIP: "10.96.72.157"
   scmType: "github"
   registry: "paulcalrtondae"
   GitHubServer: "github.com"
