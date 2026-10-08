@@ -24,6 +24,8 @@ data:
   globalGitHubBranch: "main"
   userEmail: "paul.carlton@dae.mn"
   vault_url: "https://vault.kubernetes.local.internal"
+  vaultCaConfigMap: "openshift-service-ca.crt"
+  vaultCaKey: "service-ca.crt"
   commitUser: "paul-carlton"
   mirrorRegistry: ""
   proxy: "false"
