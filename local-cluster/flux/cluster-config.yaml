@@ -12,7 +12,7 @@ data:
   ingressClassName: "openshift-default"
   clusterName: "crc-paul-carlton-mba"
   dnsSuffix: "kubernetes.local.internal"
-  clusterIP: ""
+  clusterIP: "10.217.4.190"
   scmType: "github"
   registry: "paulcalrtondae"
   GitHubServer: "github.com"
