@@ -1,8 +1,8 @@
 # Template for deploying K8s Cluster
 
-This repository contains the template for deploying a K8s cluster on a MacBook. Use this repository template to create a new repository and follow the instructions below to deploy a K8s cluster.
+This repository contains the template for deploying a K8s cluster on a MacBook. Use this repository template to create a new repository and follow the instructions below to deploy a K8s cluster. It can also be used to deploy to a OpenShift CRC cluster running on a MacBook or an OpenShift hosted cluster.
 
-It can use the Docker Kubernetes cluster deployed from the Docker Dashboard, or create a [kind](https://kind.sigs.k8s.io/) cluster. The scripts and shared configuration are in the [mac-k8s](https://github.com/pc-dae-gitops/mac-k8s) repository, which should be cloned alongside your configuration repository.
+It can use the Docker Kubernetes cluster deployed from the Docker Dashboard, or create a [kind](https://kind.sigs.k8s.io/) cluster. The scripts and shared configuration are in the [mac-k8s](https://github.dev.global.tesco.org/UKE12446847/mac-k8s) repository, which should be cloned alongside your configuration repository.
 
 ## Prerequisites
 
@@ -58,10 +58,6 @@ export GRAFANA_ADMIN_PASSWORD=...
 ```
 
 Other secrets are loaded into Vault by `secrets.sh` from JSON files in `resources/secrets`, the file path is the Vault secret name. These files are passed through `envsubst`, so reference environment variables set in your bash profile rather than putting secret values in them.
-
-### Cluster name
-
-Several clusters can send telemetry to the same New Relic, Splunk, VictoriaMetrics or Loki, so each needs a unique name. The otel collectors add it to everything they send, as `k8s.cluster.name` and the `cluster` label in VictoriaMetrics. `setup.sh` sets it to `<cluster type>-<GitHub user>-<machine name>`, e.g. `kind-paul-carlton-pauls-macbook-air`, using `GITHUB_USER` and the macOS local host name, and stores it in the `cluster-config` ConfigMap. Set `MACHINE` in `.envrc` to use a different machine name, or `CLUSTER_NAME` to choose a different cluster name. It's separate from the kind cluster name, `KIND_CLUSTER_NAME`.
 
 ### DNS
 
@@ -148,33 +144,3 @@ The `setup.sh` script deploys Flux, which deploys core utilities: Kyverno, cert-
 For Docker Kubernetes, reset the Kubernetes cluster using the Docker Dashboard.
 
 For kind, run `kind-cluster.sh --delete`. The local registry and mirror containers are retained so that cached images can be reused, remove them using `docker rm -f kind-registry $(docker ps -aq --filter name=kind-mirror-)`.
-
----
-
-## Document Provenance
-
-### AI Generation Disclosure
-
-| Field | Value |
-| --- | --- |
-| AI Involvement | Co-authored |
-| AI Model | Claude Opus 5.5 (claude-opus-5-5) |
-| AI Platform | Claude Code, VS Code extension (Anthropic) |
-| Human Accountable | Paul Carlton |
-| Date of Generation | 28 September 2026 |
-| Document Status | REVIEWED |
-| Human Oversight Record | reviewed |
-| Personal Data Flag | No personal data. |
-| Intended Audience | Public, users of this repository template |
-| Known Limitations | Tested with kind v0.33.0 on macOS. Docker Kubernetes behaviour of the new kind related changes has not been retested. |
-| Confidentiality Classification | PUBLIC |
-| Version | v0.2 |
-
-### Input Document Register
-
-| Ref | Document Title | Document Type | Author / Source | Date | Classification | How Used |
-| --- | --- | --- | --- | --- | --- | --- |
-| IDR-001 | Previous README.md | Report | Paul Carlton | Undated | Public | Base content, updated. |
-| IDR-002 | mac-k8s scripts and resources | Code File | Paul Carlton, pc-dae-gitops/mac-k8s | 28 September 2026 | Public | Source of setup, kind and secrets behaviour described. |
-| IDR-003 | Claude Code session | Conversation | Paul Carlton, Claude | 28 September 2026 | Internal | Requirements for kind support, secrets handling and prerequisites. |
-| IDR-004 | kind documentation and v0.33.0 release notes | Web Page | <https://kind.sigs.k8s.io/>, <https://github.com/kubernetes-sigs/kind/releases> | 26 August 2026 | Public | Kind installation and node image references. |
